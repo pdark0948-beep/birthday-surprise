@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <meta name="description" content="Kejutan ulang tahun spesial dan interaktif">
+  <meta name="theme-color" content="#FFF8F9">
+  <title>Happy Birthday, Sayang! 💖</title>
+
+  <!-- Typography: Geist Font via CDN -->
+  <link rel="preconnect" href="https://cdn.jsdelivr.net">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/geist@1.3.1/dist/core.min.css">
+  <link rel="stylesheet" href="style.css">
+
+  <!-- Canvas Confetti for Candle Extinguish Celebration -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js" defer></script>
+  <!-- YouTube IFrame API for Love Story by Taylor Swift -->
+  <script src="https://www.youtube.com/iframe_api" defer></script>
+</head>
+<body>
+  <!-- Full-Screen Dynamic Background Wallpaper (Changes per Step) -->
+  <div id="bgWallpaper" class="bg-wallpaper" aria-hidden="true"></div>
+
+  <!-- Hidden YouTube Audio Player -->
+  <div id="ytPlayerContainer" style="position: absolute; left: -9999px; top: -9999px; width: 1px; height: 1px; overflow: hidden; opacity: 0; pointer-events: none;" aria-hidden="true">
+    <div id="ytPlayer"></div>
+  </div>
+
+  <!-- Floating Music Controller (Accessible & Functional) -->
+  <header class="music-pill-container" role="region" aria-label="Pemutar Musik">
+    <button id="musicToggleBtn" class="music-pill" type="button" aria-label="Putar atau jeda musik latar" aria-pressed="false">
+      <span class="music-icon" aria-hidden="true">
+        <span class="bar bar-1"></span>
+        <span class="bar bar-2"></span>
+        <span class="bar bar-3"></span>
+      </span>
+      <span id="musicLabel" class="music-label">Love Story • Taylor Swift 🎵</span>
+    </button>
+    <!-- Background Audio Fallback -->
+    <audio id="bgAudio" preload="auto" loop src="lagu.mp3"></audio>
+  </header>
+
+  <!-- Main Multi-step Card Container -->
+  <main class="app-viewport">
+    <div class="card-wrapper" id="cardContainer">
+
+      <!-- STEP 1: WELCOME SCREEN - BACKGROUND: KOLASE FOTO -->
+      <section class="step-card active has-photo-bg" id="step1" aria-labelledby="welcomeTitle">
+        <div class="card-content">
+          <div class="badge-pill">HARI SPESIAL UNTUKMU ✨</div>
+
+          <div class="text-group">
+            <h1 id="welcomeTitle" class="title-primary">Happy Birthday, Sayang! 💖</h1>
+            <p class="desc-text">
+              Aku sudah menyiapkan perjalanan kecil penuh kenangan khusus untuk merayakan hari kelahiranmu. Nikmati setiap langkahnya ya!
+            </p>
+          </div>
+
+          <div class="note-box">
+            <span class="note-icon" aria-hidden="true">💡</span>
+            <p class="note-text">Nyalakan volume ponselmu agar suasana lebih terasa hangat.</p>
+          </div>
+        </div>
+
+        <div class="card-footer">
+          <button class="btn btn-primary btn-cta" type="button" onclick="goToStep(2)">
+            <span>Buka Kejutan</span>
+            <span class="btn-arrow" aria-hidden="true">&rarr;</span>
+          </button>
+          <p class="footer-credit">Dibuat dengan sepenuh hati hanya untukmu</p>
+        </div>
+      </section>
+
+      <!-- STEP 2: MINI GAME (ROMANTIC QUIZ) - BACKGROUND: FOTO 1 -->
+      <section class="step-card has-photo-bg" id="step2" aria-labelledby="quizTitle">
+        <div class="card-content">
+          <div class="step-tracker">
+            <span class="step-tag">GAME CINTA 🎮</span>
+            <span class="step-number" id="quizCounter">Pertanyaan Spesial</span>
+          </div>
+
+          <div class="text-group">
+            <h2 id="quizTitle" class="title-secondary">Ujian Ingatan Kenangan 🧐</h2>
+            <p class="desc-text">Buktikan kalau kamu tidak pernah lupa tanggal paling bersejarah buat perjalanan kita!</p>
+          </div>
+
+          <div class="quiz-box">
+            <h3 class="quiz-question" id="quizQuestionText">Kapan hari jadi kita?</h3>
+
+            <div class="quiz-options" id="quizOptionsContainer" role="radiogroup" aria-label="Pilihan Jawaban">
+              <!-- Rendered via JavaScript -->
+            </div>
+
+            <!-- Feedback Alert -->
+            <div class="quiz-feedback" id="quizFeedback" role="status" aria-live="polite"></div>
+          </div>
+        </div>
+
+        <div class="card-footer">
+          <button class="btn btn-primary btn-cta" id="quizNextBtn" type="button" disabled onclick="handleQuizNext()">
+            <span>Lanjut ke Kue Ultah</span>
+            <span class="btn-arrow" aria-hidden="true">&rarr;</span>
+          </button>
+        </div>
+      </section>
+
+      <!-- STEP 3: VIRTUAL BIRTHDAY CAKE & TIUP LILIN - BACKGROUND: FOTO 2 -->
+      <section class="step-card has-photo-bg" id="step3" aria-labelledby="cakeTitle">
+        <div class="card-content">
+          <div class="step-tracker">
+            <span class="step-tag gold">WISH TIME 🌟</span>
+            <span class="step-number">Tiup & Rayakan</span>
+          </div>
+
+          <div class="text-group">
+            <h2 id="cakeTitle" class="title-secondary">Tiup Lilinnya Sayang! 🎂</h2>
+            <p class="desc-text">Pikirkan satu doa dan harapan terindahmu di usia baru ini, lalu tekan lilin atau tombol di bawah.</p>
+          </div>
+
+          <!-- Virtual Cake Graphic Component -->
+          <div class="cake-stage" id="cakeStage" onclick="blowCandle()" role="button" tabindex="0" aria-label="Tekan untuk meniup lilin kue ulang tahun">
+            <div class="cake-sparkles" aria-hidden="true">
+              <span class="sparkle s1">✨</span>
+              <span class="sparkle s2">🌸</span>
+              <span class="sparkle s3">✨</span>
+            </div>
+
+            <div class="cake-assembly">
+              <!-- Flame & Wick -->
+              <div class="flame-container" id="flameContainer">
+                <div class="candle-smoke" id="candleSmoke" aria-hidden="true"></div>
+                <div class="flame-glow" id="candleFlame" aria-hidden="true"></div>
+              </div>
+              <div class="candle-stick"></div>
+
+              <!-- Tier 1 (Top) -->
+              <div class="cake-tier tier-top">
+                <div class="strawberry-toppings" aria-hidden="true">
+                  <span>🍓</span>
+                  <span>🍓</span>
+                  <span>🍓</span>
+                </div>
+              </div>
+
+              <!-- Tier 2 (Bottom) -->
+              <div class="cake-tier tier-bottom">
+                <div class="cream-pearls" aria-hidden="true">
+                  <span>🤍</span>
+                  <span>🤍</span>
+                  <span>🤍</span>
+                  <span>🤍</span>
+                </div>
+              </div>
+
+              <!-- Plate -->
+              <div class="cake-plate"></div>
+            </div>
+
+            <p class="cake-hint" id="cakeHintText">Ketuk kue atau tekan tombol untuk meniup!</p>
+          </div>
+        </div>
+
+        <div class="card-footer">
+          <button class="btn btn-primary btn-cta" id="blowBtn" type="button" onclick="blowCandle()">
+            <span id="blowBtnText">💨 Tiup Lilin Sekarang!</span>
+          </button>
+          <button class="btn btn-secondary btn-cta hidden" id="cakeProceedBtn" type="button" onclick="goToStep(4)">
+            <span>Buka Surat Buat Kamu &rarr;</span>
+          </button>
+        </div>
+      </section>
+
+      <!-- STEP 4: LOVE LETTER - BACKGROUND: FOTO 3 -->
+      <section class="step-card has-photo-bg" id="step4" aria-labelledby="letterTitle">
+        <div class="card-content">
+          <div class="step-tracker">
+            <span class="step-tag">PESAN HATI 💌</span>
+            <span class="step-number">Surat Untukmu</span>
+          </div>
+
+          <div class="text-group">
+            <h2 id="letterTitle" class="title-secondary">Surat Kecil Dari Hatiku 🕊️</h2>
+            <p class="desc-text">Ada beberapa kata yang ingin aku sampaikan di hari bahagiamu ini.</p>
+          </div>
+
+          <!-- Parchment Paper Letter Card -->
+          <article class="parchment-letter" tabindex="0" aria-label="Isi Surat Ulang Tahun">
+            <div class="wax-seal-wrapper">
+              <span class="letter-stamp-date">Hari Spesialmu</span>
+              <div class="wax-seal" aria-hidden="true">
+                <span>❤️</span>
+              </div>
+            </div>
+
+            <p class="letter-greeting">Untuk Sayangku Tercinta,</p>
+
+            <div class="letter-body">
+              <p>
+                Selamat ulang tahun ya! Di hari yang sangat istimewa ini, aku hanya ingin menyampaikan rasa syukur yang amat dalam karena dipertemukan denganmu. Kamu selalu menjadi alasan di balik banyak senyuman, semangat, dan hari-hari tenangku.
+              </p>
+              <p>
+                Terima kasih sudah selalu sabar, pengertian, dan jadi tempat paling nyaman untuk pulang. Semoga di usiamu yang baru ini, setiap langkahmu dilapangkan, kesehatanmu selalu terjaga, dan mimpi-mimpimu terwujud satu per satu.
+              </p>
+              <p>
+                Apa pun yang terjadi di depan nanti, aku akan selalu berusaha ada di sampingmu untuk merayakan setiap bahagiamu.
+              </p>
+            </div>
+
+            <div class="letter-signature">
+              <span class="sig-title">Selalu menyayangimu,</span>
+              <span class="sig-name">Dari Pasanganmu yang Paling Beruntung ❤️</span>
+            </div>
+          </article>
+        </div>
+
+        <div class="card-footer">
+          <button class="btn btn-primary btn-cta" type="button" onclick="goToStep(5)">
+            <span>Tuliskan Harapanmu</span>
+            <span class="btn-arrow" aria-hidden="true">&rarr;</span>
+          </button>
+        </div>
+      </section>
+
+      <!-- STEP 5: MAKE A WISH - BACKGROUND: FOTO 4 -->
+      <section class="step-card has-photo-bg" id="step5" aria-labelledby="wishTitle">
+        <div class="card-content">
+          <div class="step-tracker">
+            <span class="step-tag gold">LANGKAH TERAKHIR 🌟</span>
+            <span class="step-number">Kotak Harapan</span>
+          </div>
+
+          <div class="text-group">
+            <h2 id="wishTitle" class="title-secondary">Kotak Harapanmu 📮</h2>
+            <p class="desc-text">
+              Tuliskan doa atau apa pun yang ingin kamu sampaikan. Pesanmu akan tersimpan langsung di catatan rahasiaku!
+            </p>
+          </div>
+
+          <!-- Wish Form with Real State Management (Empty, Loading, Error, Success) -->
+          <form id="wishForm" class="wish-form" onsubmit="handleWishSubmit(event)" novalidate>
+            
+            <div class="form-group">
+              <label for="wishMain" class="form-label">
+                1. Doa dan harapan terbesarmu di usia baru ini <span class="req-star" aria-hidden="true">*</span>
+              </label>
+              <textarea 
+                id="wishMain" 
+                name="wishMain" 
+                class="form-input form-textarea" 
+                rows="3" 
+                placeholder="Contoh: Semoga kita selalu kompak, sehat selalu, dan tercapai resolusi tahun ini..." 
+                required></textarea>
+              <span class="field-error" id="wishMainError" aria-live="polite"></span>
+            </div>
+
+            <div class="form-group">
+              <label for="wishSecret" class="form-label">
+                2. Pesan rahasia buat aku (kalau ada) 🤫
+              </label>
+              <textarea 
+                id="wishSecret" 
+                name="wishSecret" 
+                class="form-input form-textarea" 
+                rows="3" 
+                placeholder="Tulis apa saja yang pengen kamu sampaikan..."></textarea>
+            </div>
+
+            <!-- Form Status Messages: Loading, Success, Error -->
+            <div id="formStatusAlert" class="form-status-alert hidden" role="status" aria-live="polite"></div>
+
+            <button type="submit" id="submitWishBtn" class="btn btn-primary btn-cta">
+              <span id="submitBtnText">Kirim Harapan ke Catatan Rahasia 💖</span>
+              <span class="spinner hidden" id="submitSpinner" aria-hidden="true"></span>
+            </button>
+          </form>
+
+          <!-- Final Success Showcase (Shown after successful submit) -->
+          <div id="wishSuccessView" class="success-celebration-card hidden" role="region" aria-label="Sukses Mengirim">
+            <div class="celebration-badge">🎉</div>
+            <h3 class="success-title">Harapanmu Sudah Tersimpan Aman!</h3>
+            <p class="success-desc">
+              Semua doa dan kata-kata manismu sudah tersimpan aman di catatan rahasiaku. Terima kasih sudah mengisi hari ini dengan senyuman. Sekali lagi, selamat ulang tahun sayang!
+            </p>
+            <div class="final-love-banner">
+              <span>I Love You Today, Tomorrow, and Always ❤️</span>
+            </div>
+            <button class="btn btn-secondary btn-cta" type="button" onclick="restartSurprise()">
+              <span>Putar Ulang Kejutan ↺</span>
+            </button>
+          </div>
+
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
+
